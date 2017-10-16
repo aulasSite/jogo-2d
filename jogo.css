@@ -1,0 +1,27 @@
+#personagem{
+  position: absolute;
+  background-color: blue;
+  width:4%;
+  height:10%;
+  border: 1px solid black;
+  bottom:0px;
+  left:0px;
+
+}
+#map{
+
+  position:relative;
+  border: 1px solid black;
+  height: 500px;
+  width: 800px;
+
+}
+.zumbi{
+	position: absolute;
+	background-color: green;
+	width:4%;
+	height:10%;
+	border: 1px solid black;
+	bottom:5px;
+	left:0px;
+}
