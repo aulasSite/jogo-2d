@@ -1,24 +1,71 @@
+var listaX = [1];
+var listaY = [1] ;
 $(function () {
 	var player='<div id="personagem"></div>';
 	var numeroDeZumbi = 0;
 	var divZumbi='<div id="zumbi0" class="zumbi"></div>';
 	$('#map').append(player);
 	$('#map').append(divZumbi);
+	listaX[0] = $('#zumbi0').position().left;
+	listaY[0] = $('#zumbi0').position().top;
+	console.log(listaX);
 	moveZumbi('#zumbi0');
 	
-	setInterval(function(){
+	function zumbiXY(num){
+		var varZumbi = '#zumbi' + num;
+		//console.log("pos do " + varZumbi);
+		listaX[num] = $(varZumbi).position().left;
+		listaY[num] = $(varZumbi).position().top;
+		//console.log(listaY);
+	}	
+	function update(){
+		var contador = 0;
+		var total = numeroDeZumbi + 1;
+		//console.log("total: " + total);
+		while(contador < total ){
+			zumbiXY(contador);
+			contador+=1;
+		}
+		//console.log(listaX);
+	}
+	function colide(){
+		var x = $('#personagem').position().left;
+		var erros = 0;
+		var y = $('#personagem').position().top;
+		var contador = 1;
+		$.each([ listaX ], function( index, value ) {
+			if(x > value-30 && x < value){
+				console.log(x +">"+ value +"and" + x +"<" + (value+30));
+				erros++;
+			}
+		});									//verifica o x
+		$.each([ listaY ], function( index, value ) {
+			if( y > value && y < value+30){
+				console.log(y +">"+ value +"and" + y +"<" + (value+30));
+				erros++;
+			}
+		});									//verifica o y
+	console.log('erros:' + erros);
+	if(erros > 1){alert("perdeu");}
+	}
+	
+	
+	
+	window.setInterval(function(){
 		numeroDeZumbi++;
 		divZumbi='<div id="zumbi' + numeroDeZumbi + '" class="zumbi"></div>';
 		$('#map').append(divZumbi);
-		var nome = "'#zumbi" + numeroDeZumbi + "'";
+		var nome = "#zumbi" + numeroDeZumbi;
+		zumbiXY(numeroDeZumbi);
 		moveZumbi(nome);
+		update();
 	},6000);
 	
 
-	console.log("estoy aqui");
 	var pressedKeys = [];
 	var teclasEstado = [];
 	$(document.body).keydown(function (evt) {										//detecta quando abaixado
+		colide('x');
 		var li = pressedKeys[evt.keyCode];
 		if (!li) {
 				pressedKeys[evt.keyCode] = li;
@@ -34,7 +81,7 @@ $(function () {
 					teclasEstado.push(evt.keyCode + "down");
 				}
 			
-					console.log(teclasEstado);
+					//console.log(teclasEstado);
 					
 					//console.log("tá na posição " + index);
 				}
@@ -53,7 +100,7 @@ $(function () {
 					teclasEstado.push(evt.keyCode + "up");
 				}
 				
-				console.log(teclasEstado);
+				//console.log(teclasEstado);
 				
 				
 				//console.log(evt.keyCode + "up");
@@ -62,16 +109,15 @@ $(function () {
 	
 	setInterval(function(){
 		var esquerda = $('#personagem').css('left');
+		
 		esquerda = esquerda.replace('px','');
 		var baixo = $('#personagem').css('bottom');
 		baixo = baixo.replace('px','');
-		console.log(jQuery.inArray("37down" , teclasEstado));
 		 if (jQuery.inArray("37down" , teclasEstado) != -1 && esquerda > 0) {
 				$("#personagem").animate({left:  "-=2%"}, 2 , function(){});
 			}
 		if (jQuery.inArray("38down" , teclasEstado) != -1 && baixo < 450) {	
 			 $("#personagem").animate({bottom:  "+=2%"}, 2 , function(){});
-			 console.log("hello word");
 		}
 		if (jQuery.inArray("39down" , teclasEstado) != -1  && esquerda < 753) {
 				 $("#personagem").animate({left:  "+=2%"}, 2 , function(){});
@@ -117,7 +163,9 @@ $(function () {
 		   
 		}, 200);
 	}
+	window.setInterval(function(){
+		update();
+		colide();
+	},30);
 	
-	
-
 });
