@@ -1,5 +1,7 @@
 var listaX = [1];
 var listaY = [1] ;
+//var pixelX = [];
+//var pixelY = [];
 $(function () {
 	var player='<div id="personagem"></div>';
 	var numeroDeZumbi = 0;
@@ -26,25 +28,36 @@ $(function () {
 			zumbiXY(contador);
 			contador+=1;
 		}
-		//console.log(listaX);
+		/*contador = 0 ;
+		pixelX = [];
+		while(contador<30){
+			pixelX.push($('#personagem').position().left + contador);
+			contador++;
+		}
+		//console.log(listaX);*/
 	}
 	function colide(){
+		
 		var x = $('#personagem').position().left;
 		var erros = 0;
 		var y = $('#personagem').position().top;
 		var contador = 1;
-		$.each([ listaX ], function( index, value ) {
-			if(x > value-30 && x < value){
-				console.log(x +">"+ value +"and" + x +"<" + (value+30));
+		console.log('x: ' + x + " zumbi: "+ listaX[0] );
+		/*$.each([ listaX ], function( index, value ) {
+			//console.log( x + " zumbi: "+ value );
+			if(x > value && x < value+30){
+				
+				//console.log(x +">"+ value +"and" + x +"<" + (value+30));
 				erros++;
 			}
 		});									//verifica o x
 		$.each([ listaY ], function( index, value ) {
+			//console.log( y + " zumbi: "+ value );
 			if( y > value && y < value+30){
 				console.log(y +">"+ value +"and" + y +"<" + (value+30));
 				erros++;
 			}
-		});									//verifica o y
+		});									//verifica o y*/
 	console.log('erros:' + erros);
 	if(erros > 1){alert("perdeu");}
 	}
@@ -59,7 +72,7 @@ $(function () {
 		zumbiXY(numeroDeZumbi);
 		moveZumbi(nome);
 		update();
-	},6000);
+	},600000);
 	
 
 	var pressedKeys = [];
@@ -166,6 +179,7 @@ $(function () {
 	window.setInterval(function(){
 		update();
 		colide();
-	},30);
+		//console.log(pixelX);
+	},300);
 	
 });
