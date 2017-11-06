@@ -4,7 +4,7 @@
   width:30px;
   height:50px;
   border: 1px solid black;
-  bottom:100px;
+  bottom:400px;
   left:0px;
 
 }
@@ -22,6 +22,11 @@
 	width:30px;
 	height:50px;
 	border: 1px solid black;
-	top:0px;
+	top:100px;
 	left:600px;
+}
+#botao{
+	height:10%;
+	width:40%;
+	background-color:red;
 }

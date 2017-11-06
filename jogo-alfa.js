@@ -6,7 +6,10 @@ var Pwidth = 30,
 	Zspeed = 2,
 	player='<div id="personagem"></div>',
 	numeroDeZumbi = 0,
-	divZumbi='<div id="zumbi0" class="zumbi"></div>';
+	listaZumbi = ['#zumbi0'];
+	divZumbi='<div id="zumbi0" class="zumbi"></div>',
+	gameState = 'inicial',
+	resultadoZumbi = 'f';
 	
 	
 $(function(){
@@ -18,6 +21,13 @@ $(function(){
 		$('#map').append(player);
 		$('#map').append(divZumbi);
 		moveZumbi('#zumbi0');
+		gameState = 'jogando';
+	}
+	
+	function botao(){
+		$('#botao').click(function(){
+			alert('pause');
+		});
 	}
 	
 	function colide(objA, widthA, objB, widthB, letra){
@@ -29,13 +39,11 @@ $(function(){
 			$(objA).position().left < $(objB).position().left + widthB  
 			){
 				return true;
-				console.log('entrou em X');
 		}
 		else if(letra == 'y' && 
 			$(objA).position().top + widthA  > $(objB).position().top &&
 			$(objA).position().top - widthB  < $(objB).position().top 
 		){
-			console.log('entrou em Y');
 			return true;
 		}
 		else{	
@@ -43,68 +51,123 @@ $(function(){
 		}
 	}	
 	
+	function colideZumbi(adr){
+		$.each(listaZumbi , function(index, value){
+			zumbi = $( adr );
+			nome = $( value );
+			
+			if(adr != value && zumbi.position().left + Zwidth > nome.position().left && zumbi.position().left <= nome.position().left + Zwidth/2 &&
+				zumbi.position().top + Zheight  >nome.position().top &&
+				zumbi.position().top - Zheight  < nome.position().top 
+			){
+				if(zumbi.position().left < 50){
+					nome.css('left', (parseFloat(nome.css('left')) + Zwidth/1.9) + 'px');
+				}
+				else{
+					zumbi.css('left', (parseFloat(zumbi.css('left')) - Zwidth/1.9) + 'px');
+					console.log('colidiu');
+				}
+			}
+			if(adr != value && zumbi.position().top + Zheight > nome.position().top && zumbi.position().top <= nome.position().top + Zheight/2 &&
+				zumbi.position().left + Zwidth  >nome.position().left &&
+				zumbi.position().top - Zwidth  < nome.position().left
+			){
+				if(zumbi.position().top < 50){
+					nome.css('top', (parseFloat(nome.css('top')) + Zheight/1.9) + 'px');
+				}
+				else{
+					zumbi.css('top', (parseFloat(zumbi.css('top')) - Zheight/1.9) + 'px');
+				}
+			}
+
+		});
+	}
+	
 	function addZumbi(){
-		numeroDeZumbi++;
-		divZumbi='<div id="zumbi' + numeroDeZumbi + '" class="zumbi"></div>';
-		$('#map').append(divZumbi);
-		var nome = "#zumbi" + numeroDeZumbi;
-		moveZumbi(nome);
+			if(gameState == "jogando" || gameState == "peseguindo"){
+			numeroDeZumbi++;
+			divZumbi='<div id="zumbi' + numeroDeZumbi + '" class="zumbi"></div>';
+			$('#map').append(divZumbi);
+			var nome = "#zumbi" + numeroDeZumbi;
+			listaZumbi.push(nome);
+			moveZumbi(nome);
+			console.log(listaZumbi);
+		}
 	}
 
 	function moveZumbi(adr){
-		var adress=$( adr ); 
-		console.log(adr);
-		var esquerda = $('#personagem').position().left ;
-		var baixo =   $('#personagem').position().top ;
-		var zumbiEsquerda = adress.position().left;
-		var zumbiBaixo =  adress.position().top;   
-		 if ( zumbiBaixo < baixo && adress.position().top  > 0){
-			//console.log("subinu");
-			$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
-			} 
-		 else if ( zumbiBaixo > baixo && adress.position().top  > 448 ){
-			$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
-			}  
-		if ( zumbiEsquerda < esquerda && adress.position().left  > 0 ){
-		   //console.log("arduinu");
-			$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
-		}
-		else if ( zumbiEsquerda > esquerda && adress.position().left  < 767 ){
-			$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
-			//adress.animate({left:  anima}, 2 , function(){});
-		} 		   
+			window.setInterval(function(){
+			var adress=$( adr ); 
+			var esquerda = $('#personagem').position().left ;
+			var baixo =   $('#personagem').position().top ;
+			var zumbiEsquerda = adress.position().left;
+			var zumbiBaixo =  adress.position().top;   
+			//console.log(adress.position().top + "< 448");
+			//console.log(zumbiBaixo +'<'+ baixo);
+			if(gameState == "jogando"){
+				if ( zumbiBaixo > baixo && adress.position().top  > 0 ){
+					//console.log("subinu");
+					$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
+				} 
+				 else if ( zumbiBaixo < baixo && adress.position().top  < 550 ){
+					$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
+				}  
+				if ( zumbiEsquerda < esquerda && adress.position().left  <768){
+				   //console.log("arduinu");
+					$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
+				}
+				else if ( zumbiEsquerda > esquerda && adress.position().left  > 0 ){
+					$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
+					//adress.animate({left:  anima}, 2 , function(){});
+				}
+			}
+			else if(gameState == "peseguindo"){
+				if ( zumbiBaixo > baixo && adress.position().top  < 550 ){
+					//console.log("subinu");
+					$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
+				} 
+				 else if ( zumbiBaixo < baixo && adress.position().top > 0 ){
+					$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
+				}  
+				if ( zumbiEsquerda < esquerda && adress.position().left  > 0){
+				   //console.log("arduinu");
+					$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
+				}
+				else if ( zumbiEsquerda > esquerda && adress.position().left  < 768 ){
+					$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
+					//adress.animate({left:  anima}, 2 , function(){});
+				}
+			}
+			 
+			colideZumbi(adr);
+		},30);
 	}
 
 	function update(){
 		window.setInterval(function(){
-			//console.log(teclasEstado);
-			var contador = 0;
-			console.log(numeroDeZumbi+1);
-			while(contador <= numeroDeZumbi ){
-				moveZumbi('#zumbi'+contador);
-				var nome = '#zumbi'+numeroDeZumbi;
-				console.log('nome: '+ nome);
+			$.each(listaZumbi , function(index, nome){
 				if(colide('#personagem' , Pwidth , nome , Zwidth , 'x' ) &&  colide('#personagem' , Pheight , nome , Zheight , 'y' )){
-					//alert('PERDEU!');
-					window.location.reload(true);
+					console.log('PERDEU');
+					//window.location.reload(true);
+					gameState = 'perdeu';
 				}
-				else{
-					//console.log('estou no else');
-					if(jQuery.inArray("37down" , teclasEstado) != -1 && $('#personagem').position().left  > 0){
-						$('#personagem').css('left', (parseFloat($('#personagem').css('left')) - Pspeed) + 'px');	
-					}
-					if(jQuery.inArray("39down" , teclasEstado) != -1 && $('#personagem').position().left  < 769){
-						$('#personagem').css('left', (parseFloat($('#personagem').css('left')) + Pspeed) + 'px');	
-					}
-					if(jQuery.inArray("38down" , teclasEstado) != -1 && $('#personagem').position().top  > 2){
-						$('#personagem').css('top', (parseFloat($('#personagem').css('top')) - Pspeed) + 'px');	
-					}
-					if(jQuery.inArray("40down" , teclasEstado) != -1 && $('#personagem').position().top  < 448){
-						$('#personagem').css('top', (parseFloat($('#personagem').css('top')) + Pspeed) + 'px');	
-					}
+			});
+				
+			if(gameState == 'jogando'){
+				//console.log('estou no else');
+				if(jQuery.inArray("37down" , teclasEstado) != -1 && $('#personagem').position().left  > 0){
+					$('#personagem').css('left', (parseFloat($('#personagem').css('left')) - Pspeed) + 'px');	
 				}
-				contador++;
-			}			//while
+				if(jQuery.inArray("39down" , teclasEstado) != -1 && $('#personagem').position().left  < 769){
+					$('#personagem').css('left', (parseFloat($('#personagem').css('left')) + Pspeed) + 'px');	
+				}
+				if(jQuery.inArray("38down" , teclasEstado) != -1 && $('#personagem').position().top  > 2){
+					$('#personagem').css('top', (parseFloat($('#personagem').css('top')) - Pspeed) + 'px');	
+				}
+				if(jQuery.inArray("40down" , teclasEstado) != -1 && $('#personagem').position().top  < 448){
+					$('#personagem').css('top', (parseFloat($('#personagem').css('top')) + Pspeed) + 'px');	
+				}
+			}		
 		},30);
 	}
 
@@ -138,7 +201,7 @@ $(function(){
 			teclasEstado.push(evt.keyCode + "up");
 		}				
 	});
-
+	botao();
 	init();	
 	update();
 	window.setInterval(function(){
