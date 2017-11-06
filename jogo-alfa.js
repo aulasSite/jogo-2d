@@ -8,8 +8,9 @@ var Pwidth = 30,
 	numeroDeZumbi = 0,
 	listaZumbi = ['#zumbi0'];
 	divZumbi='<div id="zumbi0" class="zumbi"></div>',
-	gameState = 'inicial',
-	resultadoZumbi = 'f';
+	max = 30000,
+	lastState = '';
+	gameState = 'inicial';															//possiveis: jogando, fuga, inicial, perdeu
 	
 	
 $(function(){
@@ -21,12 +22,19 @@ $(function(){
 		$('#map').append(player);
 		$('#map').append(divZumbi);
 		moveZumbi('#zumbi0');
-		gameState = 'jogando';
+		gameState = 'jogando';							
 	}
 	
 	function botao(){
 		$('#botao').click(function(){
-			alert('pause');
+			if(gameState == 'inicial' ){
+				gameState = lastState;
+			}
+			else{
+				lastState = gameState;
+				gameState = 'inicial';
+			}
+			console.log(gameState);
 		});
 	}
 	
@@ -65,12 +73,12 @@ $(function(){
 				}
 				else{
 					zumbi.css('left', (parseFloat(zumbi.css('left')) - Zwidth/1.9) + 'px');
-					console.log('colidiu');
+					//console.log('colidiu');
 				}
 			}
 			if(adr != value && zumbi.position().top + Zheight > nome.position().top && zumbi.position().top <= nome.position().top + Zheight/2 &&
 				zumbi.position().left + Zwidth  >nome.position().left &&
-				zumbi.position().top - Zwidth  < nome.position().left
+				zumbi.position().left - Zwidth  < nome.position().left
 			){
 				if(zumbi.position().top < 50){
 					nome.css('top', (parseFloat(nome.css('top')) + Zheight/1.9) + 'px');
@@ -84,76 +92,93 @@ $(function(){
 	}
 	
 	function addZumbi(){
-			if(gameState == "jogando" || gameState == "peseguindo"){
+			if(gameState == "jogando" || gameState == "fuga"){
 			numeroDeZumbi++;
 			divZumbi='<div id="zumbi' + numeroDeZumbi + '" class="zumbi"></div>';
 			$('#map').append(divZumbi);
 			var nome = "#zumbi" + numeroDeZumbi;
 			listaZumbi.push(nome);
 			moveZumbi(nome);
-			console.log(listaZumbi);
+			//console.log(listaZumbi);
 		}
 	}
 
 	function moveZumbi(adr){
-			window.setInterval(function(){
-			var adress=$( adr ); 
-			var esquerda = $('#personagem').position().left ;
-			var baixo =   $('#personagem').position().top ;
-			var zumbiEsquerda = adress.position().left;
-			var zumbiBaixo =  adress.position().top;   
-			//console.log(adress.position().top + "< 448");
-			//console.log(zumbiBaixo +'<'+ baixo);
-			if(gameState == "jogando"){
-				if ( zumbiBaixo > baixo && adress.position().top  > 0 ){
-					//console.log("subinu");
-					$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
-				} 
-				 else if ( zumbiBaixo < baixo && adress.position().top  < 550 ){
-					$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
-				}  
-				if ( zumbiEsquerda < esquerda && adress.position().left  <768){
-				   //console.log("arduinu");
-					$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
+		window.setInterval(function(){
+			if($(adr).length > 0){
+				//console.log($(adr).length );
+				var adress=$( adr ); 
+				var esquerda = $('#personagem').position().left ;
+				var baixo =   $('#personagem').position().top ;
+				var zumbiEsquerda = adress.position().left;
+				var zumbiBaixo =  adress.position().top;   
+				//console.log(adress.position().top + "< 448");
+				//console.log(zumbiBaixo +'<'+ baixo);
+				if(gameState == "jogando"){
+					if ( zumbiBaixo > baixo && adress.position().top  > 0 ){
+						//console.log("subinu");
+						$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
+					} 
+					 else if ( zumbiBaixo < baixo && adress.position().top  < 550 ){
+						$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
+					}  
+					if ( zumbiEsquerda < esquerda && adress.position().left  <768){
+					   //console.log("arduinu");
+						$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
+					}
+					else if ( zumbiEsquerda > esquerda && adress.position().left  > 0 ){
+						$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
+						//adress.animate({left:  anima}, 2 , function(){});
+					}
 				}
-				else if ( zumbiEsquerda > esquerda && adress.position().left  > 0 ){
-					$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
-					//adress.animate({left:  anima}, 2 , function(){});
+				else if(gameState == "fuga"){
+					if ( zumbiBaixo > baixo && adress.position().top  < 445 ){
+						//console.log("subinu");
+						$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
+					} 
+					 else if ( zumbiBaixo < baixo && adress.position().top > 0 ){
+						$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
+					}  
+					if ( zumbiEsquerda < esquerda && adress.position().left  > 3){
+					   //console.log("arduinu");
+						$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
+					}
+					else if ( zumbiEsquerda > esquerda && adress.position().left  < 768 ){
+						$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
+						//adress.animate({left:  anima}, 2 , function(){});
+					}
 				}
-			}
-			else if(gameState == "peseguindo"){
-				if ( zumbiBaixo > baixo && adress.position().top  < 550 ){
-					//console.log("subinu");
-					$(adr).css('top', (parseFloat($(adr).css('top')) - Zspeed) + 'px');
-				} 
-				 else if ( zumbiBaixo < baixo && adress.position().top > 0 ){
-					$(adr).css('top', (parseFloat($(adr).css('top')) + Zspeed) + 'px');
-				}  
-				if ( zumbiEsquerda < esquerda && adress.position().left  > 0){
-				   //console.log("arduinu");
-					$(adr).css('left', (parseFloat($(adr).css('left')) + Zspeed) + 'px');	
-				}
-				else if ( zumbiEsquerda > esquerda && adress.position().left  < 768 ){
-					$(adr).css('left', (parseFloat($(adr).css('left')) - Zspeed) + 'px');
-					//adress.animate({left:  anima}, 2 , function(){});
-				}
-			}
-			 
-			colideZumbi(adr);
+				 
+				colideZumbi(adr);
+			}	
 		},30);
 	}
 
 	function update(){
 		window.setInterval(function(){
 			$.each(listaZumbi , function(index, nome){
-				if(colide('#personagem' , Pwidth , nome , Zwidth , 'x' ) &&  colide('#personagem' , Pheight , nome , Zheight , 'y' )){
-					console.log('PERDEU');
-					//window.location.reload(true);
-					gameState = 'perdeu';
+				if($(nome).length > 0){
+					if(colide('#personagem' , Pwidth , nome , Zwidth , 'x' ) &&  colide('#personagem' , Pheight , nome , Zheight , 'y' )){
+						if(gameState == 'jogando'){
+							console.log('PERDEU');
+							//window.location.reload(true);
+							gameState = 'perdeu';
+						}
+						if(gameState == 'fuga'){
+							$( nome ).remove();
+							var removeItem = 2;
+							listaZumbi = jQuery.grep(listaZumbi, function(value) {
+								return value != nome;
+							});
+						}
+					}
 				}
 			});
-				
-			if(gameState == 'jogando'){
+			
+			if(gameState == 'jogando' &&$('.star').length > 0 && colide('#personagem' , Pwidth , '.star' , 30 , 'x' ) && colide('#personagem' , Pheight , '.star' , 30 , 'y' )){
+				alert('colidiu');
+			}
+			if(gameState == 'jogando' || gameState == 'fuga'){
 				//console.log('estou no else');
 				if(jQuery.inArray("37down" , teclasEstado) != -1 && $('#personagem').position().left  > 0){
 					$('#personagem').css('left', (parseFloat($('#personagem').css('left')) - Pspeed) + 'px');	
@@ -171,7 +196,16 @@ $(function(){
 		},30);
 	}
 
+	function novoNum() {
+		return Math.floor(Math.random() * max) + 1;
+	}
 
+	setTimeout(function foo(){
+		max += 1000;
+		console.log(max);
+		$('#map').append("<div class='star'></div>");
+		setTimeout(foo, novoNum());
+	}, novoNum());
 
 	var pressedKeys = [],
 	teclasEstado = [];
